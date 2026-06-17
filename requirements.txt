@@ -1,0 +1,8 @@
+# Geração de XML para exportação no formato GEPHI (.gexf)
+lxml
+
+# Jupyter Notebook (para rodar os notebooks localmente)
+notebook
+
+#logger
+loguru
