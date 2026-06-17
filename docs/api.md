@@ -1,37 +1,37 @@
-# Referencia da API
+# Referência da API
 
-Este documento descreve a API publica da biblioteca `pgraph`. A biblioteca oferece duas implementacoes concretas de grafo simples direcionado: `AdjacencyMatrixGraph` e `AdjacencyListGraph`. Ambas implementam a mesma interface definida por `AbstractGraph`.
+Este documento descreve a API pública da biblioteca `pgraph`. A biblioteca oferece duas implementações concretas de grafo simples direcionado: `AdjacencyMatrixGraph` e `AdjacencyListGraph`. Ambas implementam a mesma interface definida por `AbstractGraph`.
 
-## Sumario
+## Sumário
 
-- [Restricoes do modelo de dados](#restricoes-do-modelo-de-dados)
-- [Instalacao](#instalacao)
-- [Importacao](#importacao)
+- [Restrições do modelo de dados](#restrições-do-modelo-de-dados)
+- [Instalação](#instalação)
+- [Importação](#importação)
 - [AdjacencyMatrixGraph](#adjacencymatrixgraph)
 - [AdjacencyListGraph](#adjacencylistgraph)
-- [Metodos herdados de AbstractGraph](#metodos-herdados-de-abstractgraph)
-- [Exportacao para Gephi](#exportacao-para-gephi)
-- [Excecoes](#excecoes)
+- [Métodos herdados de AbstractGraph](#métodos-herdados-de-abstractgraph)
+- [Exportação para Gephi](#exportação-para-gephi)
+- [Exceções](#exceções)
 - [Tabela de complexidades](#tabela-de-complexidades)
 - [Exemplos](#exemplos)
 
 ---
 
-## Restricoes do modelo de dados
+## Restrições do modelo de dados
 
-Toda implementacao concreta obedece as seguintes restricoes:
+Toda implementação concreta obedece às seguintes restrições:
 
-- **Grafo simples:** lacos `(u, u)` nao sao permitidos e nao ha arestas multiplas entre o mesmo par de vertices.
-- **Grafo direcionado:** cada aresta `(u, v)` tem origem `u` e destino `v` distintos. A aresta `(v, u)` e independente de `(u, v)`.
-- **Indices inteiros:** vertices sao identificados por indices inteiros no intervalo `[0, num_vertices)`.
-- **Pesos float:** arestas e vertices possuem peso do tipo `float`, com valor padrao `0.0`.
-- **Idempotencia:** `add_edge(u, v)` chamado mais de uma vez nao cria arestas duplicadas nem altera o peso existente.
-- **Silencio em remocao:** `remove_edge(u, v)` nao lanca excecao se a aresta nao existir.
-- **Conectividade forte:** `is_connected()` verifica conectividade forte (todos os vertices sao mutuamente alcancaveis no grafo direcionado).
+- **Grafo simples:** laços `(u, u)` não são permitidos e não há arestas múltiplas entre o mesmo par de vértices.
+- **Grafo direcionado:** cada aresta `(u, v)` tem origem `u` e destino `v` distintos. A aresta `(v, u)` é independente de `(u, v)`.
+- **Índices inteiros:** vértices são identificados por índices inteiros no intervalo `[0, num_vertices)`.
+- **Pesos float:** arestas e vértices possuem peso do tipo `float`, com valor padrão `0.0`.
+- **Idempotência:** `add_edge(u, v)` chamado mais de uma vez não cria arestas duplicadas nem altera o peso existente.
+- **Silêncio em remoção:** `remove_edge(u, v)` não lança exceção se a aresta não existir.
+- **Conectividade forte:** `is_connected()` verifica conectividade forte (todos os vértices são mutuamente alcançáveis no grafo direcionado).
 
 ---
 
-## Instalacao
+## Instalação
 
 **Requisitos:** Python 3.8 ou superior.
 
@@ -50,7 +50,7 @@ Para uso no Google Colab:
 
 ---
 
-## Importacao
+## Importação
 
 ```python
 from graph import AdjacencyMatrixGraph, AdjacencyListGraph
@@ -64,9 +64,9 @@ from graph import AdjacencyMatrixGraph, AdjacencyListGraph
 graph.adjacency_matrix_graph.AdjacencyMatrixGraph(num_vertices)
 ```
 
-Representacao por matriz de adjacencias. Cada celula `_adj_matrix[u][v]` armazena o peso da aresta `(u, v)` como `float`, ou `None` quando a aresta nao existe.
+Representação por matriz de adjacências. Cada célula `_adj_matrix[u][v]` armazena o peso da aresta `(u, v)` como `float`, ou `None` quando a aresta não existe.
 
-**Complexidade de espaco:** O(n^2), onde `n` e o numero de vertices. Recomendada para grafos densos.
+**Complexidade de espaço:** O(n^2), onde `n` é o número de vértices. Recomendada para grafos densos.
 
 ### Construtor
 
@@ -74,17 +74,17 @@ Representacao por matriz de adjacencias. Cada celula `_adj_matrix[u][v]` armazen
 AdjacencyMatrixGraph(num_vertices: int) -> None
 ```
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
-| `num_vertices` | `int` | Numero de vertices. Vertices sao indexados de `0` a `num_vertices - 1`. |
+| `num_vertices` | `int` | Número de vértices. Vértices são indexados de `0` a `num_vertices - 1`. |
 
 **Exemplo:**
 
 ```python
-g = AdjacencyMatrixGraph(5)  # grafo com vertices 0, 1, 2, 3, 4
+g = AdjacencyMatrixGraph(5)  # grafo com vértices 0, 1, 2, 3, 4
 ```
 
-### Metodos de aresta
+### Métodos de aresta
 
 #### `add_edge`
 
@@ -92,14 +92,14 @@ g = AdjacencyMatrixGraph(5)  # grafo com vertices 0, 1, 2, 3, 4
 add_edge(u: int, v: int) -> None
 ```
 
-Adiciona a aresta `(u, v)` com peso `0.0`. Se a aresta ja existir, nenhuma acao e tomada e o peso original e preservado.
+Adiciona a aresta `(u, v)` com peso `0.0`. Se a aresta já existir, nenhuma ação é tomada e o peso original é preservado.
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
-| `u` | `int` | Vertice de origem. |
-| `v` | `int` | Vertice de destino. |
+| `u` | `int` | Vértice de origem. |
+| `v` | `int` | Vértice de destino. |
 
-Lanca `ValueError` se `u` ou `v` forem invalidos, ou se `u == v`.
+Lança `ValueError` se `u` ou `v` forem inválidos, ou se `u == v`.
 
 Complexidade: O(1).
 
@@ -109,9 +109,9 @@ Complexidade: O(1).
 remove_edge(u: int, v: int) -> None
 ```
 
-Remove a aresta `(u, v)`. Se a aresta nao existir, a operacao e silenciosa.
+Remove a aresta `(u, v)`. Se a aresta não existir, a operação é silenciosa.
 
-Lanca `ValueError` se `u` ou `v` forem invalidos.
+Lança `ValueError` se `u` ou `v` forem inválidos.
 
 Complexidade: O(1).
 
@@ -121,9 +121,9 @@ Complexidade: O(1).
 has_edge(u: int, v: int) -> bool
 ```
 
-Retorna `True` se a aresta `(u, v)` existir, `False` caso contrario.
+Retorna `True` se a aresta `(u, v)` existir, `False` caso contrário.
 
-Lanca `ValueError` se `u` ou `v` forem invalidos.
+Lança `ValueError` se `u` ou `v` forem inválidos.
 
 Complexidade: O(1).
 
@@ -133,7 +133,7 @@ Complexidade: O(1).
 get_edge_count() -> int
 ```
 
-Retorna o numero total de arestas no grafo. Percorre a matriz inteira.
+Retorna o número total de arestas no grafo. Percorre a matriz inteira.
 
 Complexidade: O(n^2).
 
@@ -145,13 +145,13 @@ set_edge_weight(u: int, v: int, w: float) -> None
 
 Define o peso da aresta `(u, v)`.
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
-| `u` | `int` | Vertice de origem. |
-| `v` | `int` | Vertice de destino. |
+| `u` | `int` | Vértice de origem. |
+| `v` | `int` | Vértice de destino. |
 | `w` | `float` | Peso a atribuir. |
 
-Lanca `ValueError` se a aresta nao existir ou se os indices forem invalidos.
+Lança `ValueError` se a aresta não existir ou se os índices forem inválidos.
 
 Complexidade: O(1).
 
@@ -163,11 +163,11 @@ get_edge_weight(u: int, v: int) -> float
 
 Retorna o peso da aresta `(u, v)`.
 
-Lanca `ValueError` se a aresta nao existir ou se os indices forem invalidos.
+Lança `ValueError` se a aresta não existir ou se os índices forem inválidos.
 
 Complexidade: O(1).
 
-### Metodos de relacionamento
+### Métodos de relacionamento
 
 #### `is_successor`
 
@@ -191,9 +191,9 @@ Retorna `True` se `u` for predecessor de `v`, ou seja, se existe a aresta `(u, v
 is_incident(u: int, v: int, x: int) -> bool
 ```
 
-Retorna `True` se o vertice `x` for incidente a aresta `(u, v)`, ou seja, se `x == u` ou `x == v`. A aresta deve existir; caso contrario, lanca `ValueError`.
+Retorna `True` se o vértice `x` for incidente à aresta `(u, v)`, ou seja, se `x == u` ou `x == v`. A aresta deve existir; caso contrário, lança `ValueError`.
 
-### Metodos de grau
+### Métodos de grau
 
 #### `get_vertex_in_degree`
 
@@ -201,9 +201,9 @@ Retorna `True` se o vertice `x` for incidente a aresta `(u, v)`, ou seja, se `x 
 get_vertex_in_degree(u: int) -> int
 ```
 
-Retorna o grau de entrada do vertice `u`: numero de arestas `(*, u)` que chegam a `u`.
+Retorna o grau de entrada do vértice `u`: número de arestas `(*, u)` que chegam a `u`.
 
-Lanca `ValueError` se `u` for invalido.
+Lança `ValueError` se `u` for inválido.
 
 Complexidade: O(n) -- percorre a coluna `u` da matriz.
 
@@ -213,13 +213,13 @@ Complexidade: O(n) -- percorre a coluna `u` da matriz.
 get_vertex_out_degree(u: int) -> int
 ```
 
-Retorna o grau de saida do vertice `u`: numero de arestas `(u, *)` que partem de `u`.
+Retorna o grau de saída do vértice `u`: número de arestas `(u, *)` que partem de `u`.
 
-Lanca `ValueError` se `u` for invalido.
+Lança `ValueError` se `u` for inválido.
 
 Complexidade: O(n) -- percorre a linha `u` da matriz.
 
-### Metodos de propriedade do grafo
+### Métodos de propriedade do grafo
 
 #### `is_connected`
 
@@ -227,9 +227,9 @@ Complexidade: O(n) -- percorre a linha `u` da matriz.
 is_connected() -> bool
 ```
 
-Verifica se o grafo e fortemente conectado. Executa duas buscas DFS iterativas a partir do vertice `0`: uma no grafo original e outra no grafo transposto. Retorna `True` se ambas visitarem todos os vertices.
+Verifica se o grafo é fortemente conectado. Executa duas buscas DFS iterativas a partir do vértice `0`: uma no grafo original e outra no grafo transposto. Retorna `True` se ambas visitarem todos os vértices.
 
-Retorna `True` para grafos com zero vertices (condicao vacuamente verdadeira).
+Retorna `True` para grafos com zero vértices (condição vacuamente verdadeira).
 
 Complexidade: O(n^2).
 
@@ -239,7 +239,7 @@ Complexidade: O(n^2).
 is_empty_graph() -> bool
 ```
 
-Retorna `True` se o grafo nao possuir nenhuma aresta.
+Retorna `True` se o grafo não possuir nenhuma aresta.
 
 Complexidade: O(n^2).
 
@@ -249,7 +249,7 @@ Complexidade: O(n^2).
 is_complete_graph() -> bool
 ```
 
-Retorna `True` se o grafo possuir todas as `n * (n - 1)` arestas possiveis para um grafo simples direcionado sem lacos com `n` vertices.
+Retorna `True` se o grafo possuir todas as `n * (n - 1)` arestas possíveis para um grafo simples direcionado sem laços com `n` vértices.
 
 Complexidade: O(n^2), dominada por `get_edge_count`.
 
@@ -261,9 +261,9 @@ Complexidade: O(n^2), dominada por `get_edge_count`.
 graph.adjacency_list_graph.AdjacencyListGraph(num_vertices)
 ```
 
-Representacao por lista de adjacencias. Cada entrada `_adj_list[u]` e um dicionario `{v: peso}` que mapeia os sucessores de `u` ao peso da aresta correspondente.
+Representação por lista de adjacências. Cada entrada `_adj_list[u]` é um dicionário `{v: peso}` que mapeia os sucessores de `u` ao peso da aresta correspondente.
 
-**Complexidade de espaco:** O(n + m), onde `n` e o numero de vertices e `m` o numero de arestas. Recomendada para grafos esparsos.
+**Complexidade de espaço:** O(n + m), onde `n` é o número de vértices e `m` o número de arestas. Recomendada para grafos esparsos.
 
 ### Construtor
 
@@ -271,17 +271,17 @@ Representacao por lista de adjacencias. Cada entrada `_adj_list[u]` e um diciona
 AdjacencyListGraph(num_vertices: int) -> None
 ```
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
-| `num_vertices` | `int` | Numero de vertices. Vertices sao indexados de `0` a `num_vertices - 1`. |
+| `num_vertices` | `int` | Número de vértices. Vértices são indexados de `0` a `num_vertices - 1`. |
 
 **Exemplo:**
 
 ```python
-g = AdjacencyListGraph(5)  # grafo com vertices 0, 1, 2, 3, 4
+g = AdjacencyListGraph(5)  # grafo com vértices 0, 1, 2, 3, 4
 ```
 
-### Metodos de aresta
+### Métodos de aresta
 
 #### `add_edge`
 
@@ -289,9 +289,9 @@ g = AdjacencyListGraph(5)  # grafo com vertices 0, 1, 2, 3, 4
 add_edge(u: int, v: int) -> None
 ```
 
-Adiciona a aresta `(u, v)` com peso `0.0`. Se a aresta ja existir, nenhuma acao e tomada e o peso original e preservado.
+Adiciona a aresta `(u, v)` com peso `0.0`. Se a aresta já existir, nenhuma ação é tomada e o peso original é preservado.
 
-Lanca `ValueError` se `u` ou `v` forem invalidos, ou se `u == v`.
+Lança `ValueError` se `u` ou `v` forem inválidos, ou se `u == v`.
 
 Complexidade: O(1) amortizado.
 
@@ -301,9 +301,9 @@ Complexidade: O(1) amortizado.
 remove_edge(u: int, v: int) -> None
 ```
 
-Remove a aresta `(u, v)`. Se a aresta nao existir, a operacao e silenciosa.
+Remove a aresta `(u, v)`. Se a aresta não existir, a operação é silenciosa.
 
-Lanca `ValueError` se `u` ou `v` forem invalidos.
+Lança `ValueError` se `u` ou `v` forem inválidos.
 
 Complexidade: O(1) amortizado.
 
@@ -315,9 +315,9 @@ has_edge(u: int, v: int) -> bool
 
 Retorna `True` se a aresta `(u, v)` existir.
 
-Lanca `ValueError` se `u` ou `v` forem invalidos.
+Lança `ValueError` se `u` ou `v` forem inválidos.
 
-Complexidade: O(1) amortizado (lookup em dicionario).
+Complexidade: O(1) amortizado (lookup em dicionário).
 
 #### `get_edge_count`
 
@@ -325,7 +325,7 @@ Complexidade: O(1) amortizado (lookup em dicionario).
 get_edge_count() -> int
 ```
 
-Retorna o numero total de arestas no grafo. Soma o tamanho de cada dicionario de adjacencias.
+Retorna o número total de arestas no grafo. Soma o tamanho de cada dicionário de adjacências.
 
 Complexidade: O(n).
 
@@ -337,7 +337,7 @@ set_edge_weight(u: int, v: int, w: float) -> None
 
 Define o peso da aresta `(u, v)`.
 
-Lanca `ValueError` se a aresta nao existir ou se os indices forem invalidos.
+Lança `ValueError` se a aresta não existir ou se os índices forem inválidos.
 
 Complexidade: O(1) amortizado.
 
@@ -349,11 +349,11 @@ get_edge_weight(u: int, v: int) -> float
 
 Retorna o peso da aresta `(u, v)`.
 
-Lanca `ValueError` se a aresta nao existir ou se os indices forem invalidos.
+Lança `ValueError` se a aresta não existir ou se os índices forem inválidos.
 
 Complexidade: O(1) amortizado.
 
-### Metodos de relacionamento
+### Métodos de relacionamento
 
 #### `is_successor`
 
@@ -377,9 +377,9 @@ Retorna `True` se `u` for predecessor de `v`. Equivalente a `has_edge(v, u)`.
 is_incident(u: int, v: int, x: int) -> bool
 ```
 
-Retorna `True` se `x == u` ou `x == v`. A aresta deve existir; caso contrario, lanca `ValueError`.
+Retorna `True` se `x == u` ou `x == v`. A aresta deve existir; caso contrário, lança `ValueError`.
 
-### Metodos de grau
+### Métodos de grau
 
 #### `get_vertex_in_degree`
 
@@ -387,11 +387,11 @@ Retorna `True` se `x == u` ou `x == v`. A aresta deve existir; caso contrario, l
 get_vertex_in_degree(u: int) -> int
 ```
 
-Retorna o grau de entrada do vertice `u`.
+Retorna o grau de entrada do vértice `u`.
 
-Lanca `ValueError` se `u` for invalido.
+Lança `ValueError` se `u` for inválido.
 
-Complexidade: O(n + m) -- percorre todas as listas de adjacencias para contar quantas contem `u`.
+Complexidade: O(n + m) -- percorre todas as listas de adjacências para contar quantas contêm `u`.
 
 #### `get_vertex_out_degree`
 
@@ -399,13 +399,13 @@ Complexidade: O(n + m) -- percorre todas as listas de adjacencias para contar qu
 get_vertex_out_degree(u: int) -> int
 ```
 
-Retorna o grau de saida do vertice `u`.
+Retorna o grau de saída do vértice `u`.
 
-Lanca `ValueError` se `u` for invalido.
+Lança `ValueError` se `u` for inválido.
 
-Complexidade: O(1) -- tamanho do dicionario `_adj_list[u]`.
+Complexidade: O(1) -- tamanho do dicionário `_adj_list[u]`.
 
-### Metodos de propriedade do grafo
+### Métodos de propriedade do grafo
 
 #### `is_connected`
 
@@ -413,7 +413,7 @@ Complexidade: O(1) -- tamanho do dicionario `_adj_list[u]`.
 is_connected() -> bool
 ```
 
-Verifica se o grafo e fortemente conectado. Executa duas buscas DFS iterativas a partir do vertice `0`: uma no grafo original e outra no grafo transposto.
+Verifica se o grafo é fortemente conectado. Executa duas buscas DFS iterativas a partir do vértice `0`: uma no grafo original e outra no grafo transposto.
 
 Complexidade: O(n + m).
 
@@ -423,7 +423,7 @@ Complexidade: O(n + m).
 is_empty_graph() -> bool
 ```
 
-Retorna `True` se nenhum dicionario de adjacencias possuir entradas.
+Retorna `True` se nenhum dicionário de adjacências possuir entradas.
 
 Complexidade: O(n).
 
@@ -433,15 +433,15 @@ Complexidade: O(n).
 is_complete_graph() -> bool
 ```
 
-Retorna `True` se o grafo possuir todas as `n * (n - 1)` arestas possiveis.
+Retorna `True` se o grafo possuir todas as `n * (n - 1)` arestas possíveis.
 
 Complexidade: O(n).
 
 ---
 
-## Metodos herdados de AbstractGraph
+## Métodos herdados de AbstractGraph
 
-Ambas as classes herdam os metodos a seguir diretamente de `AbstractGraph`, sem override.
+Ambas as classes herdam os métodos a seguir diretamente de `AbstractGraph`, sem override.
 
 ### `get_vertex_count`
 
@@ -449,7 +449,7 @@ Ambas as classes herdam os metodos a seguir diretamente de `AbstractGraph`, sem 
 get_vertex_count() -> int
 ```
 
-Retorna o numero de vertices do grafo.
+Retorna o número de vértices do grafo.
 
 ### `set_vertex_weight`
 
@@ -457,9 +457,9 @@ Retorna o numero de vertices do grafo.
 set_vertex_weight(v: int, w: float) -> None
 ```
 
-Define o peso do vertice `v`. Peso padrao e `0.0`.
+Define o peso do vértice `v`. Peso padrão é `0.0`.
 
-Lanca `ValueError` se `v` for invalido.
+Lança `ValueError` se `v` for inválido.
 
 ### `get_vertex_weight`
 
@@ -467,9 +467,9 @@ Lanca `ValueError` se `v` for invalido.
 get_vertex_weight(v: int) -> float
 ```
 
-Retorna o peso do vertice `v`.
+Retorna o peso do vértice `v`.
 
-Lanca `ValueError` se `v` for invalido.
+Lança `ValueError` se `v` for inválido.
 
 ### `is_divergent`
 
@@ -479,7 +479,7 @@ is_divergent(u1: int, v1: int, u2: int, v2: int) -> bool
 
 Retorna `True` se as arestas `(u1, v1)` e `(u2, v2)` forem divergentes, ou seja, se compartilham a mesma origem (`u1 == u2`).
 
-Lanca `ValueError` se qualquer indice for invalido.
+Lança `ValueError` se qualquer índice for inválido.
 
 ### `is_convergent`
 
@@ -489,26 +489,26 @@ is_convergent(u1: int, v1: int, u2: int, v2: int) -> bool
 
 Retorna `True` se as arestas `(u1, v1)` e `(u2, v2)` forem convergentes, ou seja, se compartilham o mesmo destino (`v1 == v2`).
 
-Lanca `ValueError` se qualquer indice for invalido.
+Lança `ValueError` se qualquer índice for inválido.
 
 ---
 
-## Exportacao para Gephi
+## Exportação para Gephi
 
 ```python
 export_to_gephi(path: str) -> None
 ```
 
-Exporta o grafo para um arquivo compativel com o Gephi. O formato de saida e determinado pela extensao do arquivo informado em `path`.
+Exporta o grafo para um arquivo compatível com o Gephi. O formato de saída é determinado pela extensão do arquivo informado em `path`.
 
-| Extensao | Formato |
+| Extensão | Formato |
 |----------|---------|
 | `.gexf` | GEXF 1.3 (Graph Exchange XML Format) |
 | `.graphml` | GraphML (XML) |
 | `.csv` | Lista de arestas com colunas `source`, `target`, `weight` |
 
-Lanca `ValueError` se a extensao nao for suportada.
-Lanca `OSError` se nao for possivel escrever no caminho especificado.
+Lança `ValueError` se a extensão não for suportada.
+Lança `OSError` se não for possível escrever no caminho especificado.
 
 **Exemplos:**
 
@@ -518,28 +518,28 @@ g.export_to_gephi("saida.graphml")
 g.export_to_gephi("saida.csv")
 ```
 
-O arquivo GEXF inclui pesos de vertices como atributo `weight` em cada no. O arquivo GraphML registra pesos de vertices (`vweight`) e de arestas (`eweight`) como chaves separadas. O arquivo CSV nao exporta pesos de vertices.
+O arquivo GEXF inclui pesos de vértices como atributo `weight` em cada nó. O arquivo GraphML registra pesos de vértices (`vweight`) e de arestas (`eweight`) como chaves separadas. O arquivo CSV não exporta pesos de vértices.
 
 ---
 
-## Excecoes
+## Exceções
 
-| Excecao | Quando ocorre |
+| Exceção | Quando ocorre |
 |---------|---------------|
-| `ValueError` | Indice de vertice fora do intervalo `[0, num_vertices)` |
-| `ValueError` | Tentativa de adicionar laco `(u, u)` |
+| `ValueError` | Índice de vértice fora do intervalo `[0, num_vertices)` |
+| `ValueError` | Tentativa de adicionar laço `(u, u)` |
 | `ValueError` | `set_edge_weight` ou `get_edge_weight` em aresta inexistente |
 | `ValueError` | `is_incident` em aresta inexistente |
-| `ValueError` | Extensao de arquivo invalida em `export_to_gephi` |
+| `ValueError` | Extensão de arquivo inválida em `export_to_gephi` |
 | `OSError` | Falha de escrita em `export_to_gephi` |
 
 ---
 
 ## Tabela de complexidades
 
-A tabela compara as complexidades de tempo das operacoes entre as duas implementacoes. `n` e o numero de vertices e `m` o numero de arestas.
+A tabela compara as complexidades de tempo das operações entre as duas implementações. `n` é o número de vértices e `m` o número de arestas.
 
-| Operacao | AdjacencyMatrixGraph | AdjacencyListGraph |
+| Operação | AdjacencyMatrixGraph | AdjacencyListGraph |
 |----------|---------------------|--------------------|
 | `add_edge` | O(1) | O(1) amortizado |
 | `remove_edge` | O(1) | O(1) amortizado |
@@ -552,18 +552,18 @@ A tabela compara as complexidades de tempo das operacoes entre as duas implement
 | `is_connected` | O(n^2) | O(n + m) |
 | `is_empty_graph` | O(n^2) | O(n) |
 | `is_complete_graph` | O(n^2) | O(n) |
-| Espaco | O(n^2) | O(n + m) |
+| Espaço | O(n^2) | O(n + m) |
 
-**Quando usar cada representacao:**
+**Quando usar cada representação:**
 
-- `AdjacencyMatrixGraph`: grafos densos (m proximo de n^2), quando `has_edge` e a operacao dominante, ou quando a memoria nao e restricao.
-- `AdjacencyListGraph`: grafos esparsos (m muito menor que n^2), quando grau de saida ou iteracao sobre sucessores e frequente.
+- `AdjacencyMatrixGraph`: grafos densos (m próximo de n^2), quando `has_edge` é a operação dominante, ou quando a memória não é restrição.
+- `AdjacencyListGraph`: grafos esparsos (m muito menor que n^2), quando grau de saída ou iteração sobre sucessores é frequente.
 
 ---
 
 ## Exemplos
 
-### Grafo basico com pesos
+### Grafo básico com pesos
 
 ```python
 from graph import AdjacencyMatrixGraph
@@ -587,7 +587,7 @@ print(g.is_connected())           # True
 print(g.is_complete_graph())      # False
 ```
 
-### Pesos de vertices
+### Pesos de vértices
 
 ```python
 from graph import AdjacencyListGraph
@@ -602,7 +602,7 @@ print(g.get_vertex_weight(0))     # 10.0
 print(g.get_vertex_count())       # 3
 ```
 
-### Graus de entrada e saida
+### Graus de entrada e saída
 
 ```python
 from graph import AdjacencyListGraph
@@ -617,7 +617,7 @@ print(g.get_vertex_in_degree(1))  # 2  (arestas (0,1) e (3,1))
 print(g.get_vertex_in_degree(0))  # 0
 ```
 
-### Relacoes entre arestas
+### Relações entre arestas
 
 ```python
 from graph import AdjacencyMatrixGraph
@@ -635,13 +635,13 @@ print(g.is_divergent(0, 1, 1, 3))  # False  -- origens distintas
 print(g.is_convergent(0, 1, 0, 1)) # True   -- mesmo destino 1
 print(g.is_convergent(0, 1, 0, 2)) # False  -- destinos distintos
 
-# Incidencia
-print(g.is_incident(0, 1, 0))      # True   -- 0 e a origem
-print(g.is_incident(0, 1, 1))      # True   -- 1 e o destino
+# Incidência
+print(g.is_incident(0, 1, 0))      # True   -- 0 é a origem
+print(g.is_incident(0, 1, 1))      # True   -- 1 é o destino
 print(g.is_incident(0, 1, 2))      # False
 ```
 
-### Verificacao de sucessor e predecessor
+### Verificação de sucessor e predecessor
 
 ```python
 from graph import AdjacencyMatrixGraph
@@ -650,13 +650,13 @@ g = AdjacencyMatrixGraph(3)
 g.add_edge(0, 1)
 
 print(g.is_successor(0, 1))    # True  -- existe aresta (0, 1)
-print(g.is_successor(1, 0))    # False -- nao existe aresta (1, 0)
+print(g.is_successor(1, 0))    # False -- não existe aresta (1, 0)
 
 print(g.is_predecessor(0, 1))  # True  -- 0 precede 1
-print(g.is_predecessor(1, 0))  # False -- 1 nao precede 0
+print(g.is_predecessor(1, 0))  # False -- 1 não precede 0
 ```
 
-### Exportacao
+### Exportação
 
 ```python
 from graph import AdjacencyMatrixGraph
@@ -667,7 +667,7 @@ g.add_edge(1, 2)
 g.set_edge_weight(0, 1, 5.0)
 g.set_vertex_weight(0, 1.0)
 
-g.export_to_gephi("grafo.gexf")    # GEXF com pesos de nos e arestas
+g.export_to_gephi("grafo.gexf")    # GEXF com pesos de nós e arestas
 g.export_to_gephi("grafo.graphml") # GraphML com atributos separados
 g.export_to_gephi("grafo.csv")     # CSV: source,target,weight
 ```

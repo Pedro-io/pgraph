@@ -1,10 +1,10 @@
 # pgraph
 
-Biblioteca de criacao, manipulacao e analise de grafos simples direcionados, desenvolvida como trabalho pratico da disciplina de Teoria de Grafos e Computabilidade na PUC Minas 2026/1.
+Biblioteca de criação, manipulação e análise de grafos simples direcionados, desenvolvida como trabalho prático da disciplina de Teoria de Grafos e Computabilidade na PUC Minas 2026/1.
 
-Para a referencia tecnica completa de todos os metodos, parametros, excecoes e complexidades, consulte [docs/api.md](docs/api.md).
+Para a referência técnica completa de todos os métodos, parâmetros, exceções e complexidades, consulte [docs/api.md](docs/api.md).
 
-## Estrutura do repositorio
+## Estrutura do repositório
 
 ```
 pgraph/
@@ -20,14 +20,14 @@ pgraph/
 |
 |-- notebooks/                      # Exemplos de uso
 |-- docs/
-|   `-- api.md                      # Referencia da API
+|   `-- api.md                      # Referência da API
 |-- data/
 |-- pyproject.toml
 |-- requirements.txt
 `-- README.md
 ```
 
-## Instalacao
+## Instalação
 
 **Requisitos:** Python 3.8 ou superior.
 
@@ -44,7 +44,7 @@ Para uso no Google Colab:
 !pip install git+https://github.com/seu-usuario/pgraph.git
 ```
 
-## Uso basico
+## Uso básico
 
 ```python
 from graph import AdjacencyMatrixGraph, AdjacencyListGraph
@@ -61,4 +61,4 @@ print(g.is_connected())        # True/False
 g.export_to_gephi("grafo.gexf")
 ```
 
-Para exemplos mais completos, incluindo pesos de vertices, graus, relacoes entre arestas e exportacao, consulte [docs/api.md](docs/api.md).
+Para exemplos mais completos, incluindo pesos de vértices, graus, relações entre arestas e exportação, consulte [docs/api.md](docs/api.md).
