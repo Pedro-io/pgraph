@@ -1,92 +1,64 @@
 # pgraph
 
-Biblioteca de criação, manipulação e análise de grafos, desenvolvida como trabalho prático da disciplina de Teoria de Grafos e Computabilidade — PUC Minas 2026/1.
+Biblioteca de criacao, manipulacao e analise de grafos simples direcionados, desenvolvida como trabalho pratico da disciplina de Teoria de Grafos e Computabilidade na PUC Minas 2026/1.
 
-## Estrutura do repositório
+Para a referencia tecnica completa de todos os metodos, parametros, excecoes e complexidades, consulte [docs/api.md](docs/api.md).
+
+## Estrutura do repositorio
 
 ```
 pgraph/
-│
-├── graph/                          # Biblioteca
-│   ├── __init__.py
-│   ├── abstract_graph.py
-│   ├── adjacency_matrix_graph.py
-│   └── adjacency_list_graph.py
-│
-├── notebooks/
-│   ├── demo.ipynb                  # Demonstração da Etapa 1
-│   └── etapa2.ipynb                # Problema real — Etapa 2
-│
-├── data/                          # Datasets utilizados na Etapa 2
-├── pyproject.toml
-├── requirements.txt
-└── README.md
+|
+|-- graph/                          # Biblioteca
+|   |-- __init__.py
+|   |-- abstract_graph.py
+|   |-- adjacency_matrix_graph.py
+|   |-- adjacency_list_graph.py
+|   `-- utils/
+|       |-- dfs.py
+|       `-- logger.py
+|
+|-- notebooks/                      # Exemplos de uso
+|-- docs/
+|   `-- api.md                      # Referencia da API
+|-- data/
+|-- pyproject.toml
+|-- requirements.txt
+`-- README.md
 ```
 
----
+## Instalacao
 
-## Como instalar e executar
-
-### Opção 1 — Jupyter Notebook local
-
-**Pré-requisitos:** Python 3.8+ instalado.
+**Requisitos:** Python 3.8 ou superior.
 
 ```bash
-# 1. Clone o repositório
 git clone https://github.com/seu-usuario/pgraph.git
 cd pgraph
-
-# 2. (Opcional) Crie um ambiente virtual
-python -m venv venv
-source venv/bin/activate        # Linux/Mac
-venv\Scripts\activate           # Windows
-
-# 3. Instale as dependências
 pip install -r requirements.txt
-
-# 4. Instale a biblioteca em modo desenvolvimento
 pip install -e .
-
-# 5. Abra os notebooks
-jupyter notebook notebooks/
 ```
 
----
-
-### Opção 2 — Google Colab
-
-Abra qualquer notebook e execute a célula abaixo no início:
+Para uso no Google Colab:
 
 ```python
-# Instala a biblioteca direto do GitHub
 !pip install git+https://github.com/seu-usuario/pgraph.git
 ```
 
-Depois é só importar normalmente:
-
-```python
-from graph import AdjacencyMatrixGraph, AdjacencyListGraph
-```
-
----
-
-## Uso básico
+## Uso basico
 
 ```python
 from graph import AdjacencyMatrixGraph, AdjacencyListGraph
 
-# Criando um grafo com matriz de adjacência (4 vértices)
 g = AdjacencyMatrixGraph(4)
 g.add_edge(0, 1)
 g.add_edge(1, 2)
 g.set_edge_weight(0, 1, 3.5)
 
-print(g.has_edge(0, 1))       # True
+print(g.has_edge(0, 1))        # True
 print(g.get_edge_weight(0, 1)) # 3.5
 print(g.is_connected())        # True/False
 
-# Exportando para o Gephi
-g.export_to_gephi("graph.gexf")
+g.export_to_gephi("grafo.gexf")
 ```
 
----
+Para exemplos mais completos, incluindo pesos de vertices, graus, relacoes entre arestas e exportacao, consulte [docs/api.md](docs/api.md).
