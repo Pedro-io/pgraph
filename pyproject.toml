@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "pgraph"
+version = "0.1.0"
+description = "Biblioteca de criação, manipulação e análise de grafos"
+requires-python = ">=3.8"
+dependencies = [
+    "lxml",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["grafo*"]
