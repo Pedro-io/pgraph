@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Biblioteca de criação, manipulação e análise de grafos"
 requires-python = ">=3.8"
 dependencies = [
-    "lxml",
+    "loguru==0.7.3",
 ]
 
 [tool.setuptools.packages.find]
