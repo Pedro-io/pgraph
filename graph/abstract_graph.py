@@ -1,6 +1,8 @@
+"""Interface abstrata comum para grafos simples direcionados."""
+
 from abc import ABC, abstractmethod
 
-from utils import logger as logger_module
+from .utils import logger as logger_module
 
 
 class AbstractGraph(ABC):
@@ -23,7 +25,9 @@ class AbstractGraph(ABC):
         logger: Instância de logger para registro de eventos e erros.
     """
 
-    def __init__(self, num_vertices: int, logger: logger_module.Logger = logger_module.Logger()) -> None:
+    def __init__(self, num_vertices: int, logger=None) -> None:
+        if logger is None:
+            logger = logger_module.logger
         self.num_vertices = num_vertices
         self._vertex_weights: list[float] = [0.0] * num_vertices
         self.logger = logger
@@ -240,6 +244,7 @@ class AbstractGraph(ABC):
         self._validate_vertex(v)
         return self._vertex_weights[v]
 
+    @abstractmethod
     def set_edge_weight(self, u: int, v: int, w: float) -> None:
         """Define o peso da aresta (u, v).
 
@@ -252,9 +257,8 @@ class AbstractGraph(ABC):
             ValueError: Se u ou v forem índices inválidos ou se a aresta
                 (u, v) não existir.
         """
-        self._validate_vertex(u, v)
-        self._adj_matrix[u][v] = w
 
+    @abstractmethod
     def get_edge_weight(self, u: int, v: int) -> float:
         """Retorna o peso da aresta (u, v).
 
@@ -269,8 +273,6 @@ class AbstractGraph(ABC):
             ValueError: Se u ou v forem índices inválidos ou se a aresta
                 (u, v) não existir.
         """
-        self._validate_vertex(u, v)
-        return self._adj_matrix[u][v]
 
     @abstractmethod
     def is_connected(self) -> bool:
@@ -302,7 +304,6 @@ class AbstractGraph(ABC):
             True se get_edge_count() == num_vertices * (num_vertices - 1).
         """
 
-    @abstractmethod
     def export_to_gephi(self, path: str) -> None:
         """Exporta o grafo em formato compatível com o Gephi.
 
@@ -316,3 +317,101 @@ class AbstractGraph(ABC):
             ValueError: Se o formato inferido pela extensão não for suportado.
             OSError: Se não for possível escrever no caminho especificado.
         """
+        ext = path.rsplit(".", 1)[-1].lower() if "." in path else ""
+        if ext == "gexf":
+            self._export_gexf(path)
+        elif ext == "graphml":
+            self._export_graphml(path)
+        elif ext == "csv":
+            self._export_csv(path)
+        else:
+            raise ValueError(
+                f"Formato não suportado: '.{ext}'. Use .gexf, .graphml ou .csv."
+            )
+
+    def _export_gexf(self, path: str) -> None:
+        import xml.etree.ElementTree as ET
+
+        gexf = ET.Element("gexf", {"xmlns": "http://gexf.net/1.3"})
+        graph = ET.SubElement(gexf, "graph", defaultedgetype="directed")
+
+        attrs = ET.SubElement(graph, "attributes", {"class": "node"})
+        ET.SubElement(
+            attrs, "attribute", {"id": "weight", "title": "weight", "type": "float"}
+        )
+
+        nodes_el = ET.SubElement(graph, "nodes")
+        for v in range(self.num_vertices):
+            node = ET.SubElement(nodes_el, "node", id=str(v), label=str(v))
+            attvalues = ET.SubElement(node, "attvalues")
+            ET.SubElement(
+                attvalues,
+                "attvalue",
+                {"for": "weight", "value": str(self.get_vertex_weight(v))},
+            )
+
+        edges_el = ET.SubElement(graph, "edges")
+        edge_id = 0
+        for u in range(self.num_vertices):
+            for v in range(self.num_vertices):
+                if self.has_edge(u, v):
+                    ET.SubElement(
+                        edges_el,
+                        "edge",
+                        id=str(edge_id),
+                        source=str(u),
+                        target=str(v),
+                        weight=str(self.get_edge_weight(u, v)),
+                    )
+                    edge_id += 1
+
+        tree = ET.ElementTree(gexf)
+        ET.indent(tree, space="  ")
+        tree.write(path, encoding="unicode", xml_declaration=True)
+
+    def _export_graphml(self, path: str) -> None:
+        import xml.etree.ElementTree as ET
+
+        graphml = ET.Element("graphml", {"xmlns": "http://graphml.graphdrawing.org/graphml"})
+        ET.SubElement(
+            graphml,
+            "key",
+            {"id": "vweight", "for": "node", "attr.name": "weight", "attr.type": "double"},
+        )
+        ET.SubElement(
+            graphml,
+            "key",
+            {"id": "eweight", "for": "edge", "attr.name": "weight", "attr.type": "double"},
+        )
+
+        graph = ET.SubElement(graphml, "graph", id="G", edgedefault="directed")
+        for v in range(self.num_vertices):
+            node = ET.SubElement(graph, "node", id=f"n{v}")
+            data = ET.SubElement(node, "data", key="vweight")
+            data.text = str(self.get_vertex_weight(v))
+
+        edge_id = 0
+        for u in range(self.num_vertices):
+            for v in range(self.num_vertices):
+                if self.has_edge(u, v):
+                    edge = ET.SubElement(
+                        graph, "edge", id=f"e{edge_id}", source=f"n{u}", target=f"n{v}"
+                    )
+                    data = ET.SubElement(edge, "data", key="eweight")
+                    data.text = str(self.get_edge_weight(u, v))
+                    edge_id += 1
+
+        tree = ET.ElementTree(graphml)
+        ET.indent(tree, space="  ")
+        tree.write(path, encoding="unicode", xml_declaration=True)
+
+    def _export_csv(self, path: str) -> None:
+        import csv
+
+        with open(path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(["source", "target", "weight"])
+            for u in range(self.num_vertices):
+                for v in range(self.num_vertices):
+                    if self.has_edge(u, v):
+                        writer.writerow([u, v, self.get_edge_weight(u, v)])

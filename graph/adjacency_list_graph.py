@@ -1,17 +1,18 @@
-"""Grafo simples direcionado representado por matriz de adjacências."""
+"""Grafo simples direcionado representado por lista de adjacências."""
 
 from .abstract_graph import AbstractGraph
-from .utils.dfs import dfs_matrix
+from .utils.dfs import dfs_list
 
 
-class AdjacencyMatrixGraph(AbstractGraph):
-    """Grafo simples direcionado representado por matriz de adjacências.
+class AdjacencyListGraph(AbstractGraph):
+    """Grafo simples direcionado representado por lista de adjacências.
 
-    Cada célula ``_adj_matrix[u][v]`` armazena o peso da aresta ``(u, v)``
-    como ``float``, ou ``None`` quando a aresta não existe. Laços são
+    Cada entrada ``_adj_list[u]`` é um dicionário ``{v: peso}`` que mapeia
+    os sucessores de ``u`` ao peso da aresta correspondente. Laços são
     proibidos e arestas múltiplas não são suportadas.
 
-    Complexidade de espaço: O(n²), onde *n* é o número de vértices.
+    Complexidade de espaço: O(n + m), onde *n* é o número de vértices e
+    *m* o número de arestas.
 
     Vértices são identificados por índices inteiros no intervalo
     ``[0, num_vertices)``.
@@ -20,7 +21,7 @@ class AdjacencyMatrixGraph(AbstractGraph):
         num_vertices: Quantidade de vértices do grafo.
 
     Example:
-        >>> g = AdjacencyMatrixGraph(3)
+        >>> g = AdjacencyListGraph(3)
         >>> g.add_edge(0, 1)
         >>> g.has_edge(0, 1)
         True
@@ -28,27 +29,20 @@ class AdjacencyMatrixGraph(AbstractGraph):
 
     def __init__(self, num_vertices: int) -> None:
         super().__init__(num_vertices)
-        self._adj_matrix: list[list[float | None]] = [
-            [None] * num_vertices for _ in range(num_vertices)
-        ]
+        self._adj_list: list[dict[int, float]] = [{} for _ in range(num_vertices)]
 
     def get_edge_count(self) -> int:
         """Retorna a quantidade de arestas existentes no grafo.
 
-        Percorre toda a matriz para contar células não nulas.
+        Soma o número de entradas em cada dicionário de adjacências.
 
         Returns:
             Número de arestas presentes.
 
         Note:
-            Complexidade: O(n²).
+            Complexidade: O(n).
         """
-        count = 0
-        for i in range(self.num_vertices):
-            for j in range(self.num_vertices):
-                if self._adj_matrix[i][j] is not None:
-                    count += 1
-        return count
+        return sum(len(neighbors) for neighbors in self._adj_list)
 
     def has_edge(self, u: int, v: int) -> bool:
         """Verifica se existe uma aresta direcionada de ``u`` para ``v``.
@@ -64,10 +58,10 @@ class AdjacencyMatrixGraph(AbstractGraph):
             ValueError: Se ``u`` ou ``v`` forem índices inválidos.
 
         Note:
-            Complexidade: O(1).
+            Complexidade: O(1) amortizado (lookup em dicionário).
         """
         self._validate_vertex(u, v)
-        return self._adj_matrix[u][v] is not None
+        return v in self._adj_list[u]
 
     def add_edge(self, u: int, v: int) -> None:
         """Adiciona uma aresta direcionada de ``u`` para ``v`` com peso 0.0.
@@ -84,18 +78,17 @@ class AdjacencyMatrixGraph(AbstractGraph):
                 ``u == v`` (laços não são permitidos).
 
         Note:
-            Complexidade: O(1). Para definir um peso diferente de 0.0, use
-            :meth:`set_edge_weight` após adicionar a aresta.
+            Complexidade: O(1) amortizado. Para definir um peso diferente de
+            0.0, use :meth:`set_edge_weight` após adicionar a aresta.
         """
         self._validate_vertex(u, v)
         if u == v:
             raise ValueError("Laços (u, u) não são permitidos.")
 
-        if self._adj_matrix[u][v] is not None:
+        if v in self._adj_list[u]:
             self.logger.debug(f"Aresta ({u}, {v}) já existe. Nenhuma ação tomada.")
-
-        if self._adj_matrix[u][v] is None:
-            self._adj_matrix[u][v] = 0.0
+        else:
+            self._adj_list[u][v] = 0.0
 
     def remove_edge(self, u: int, v: int) -> None:
         """Remove a aresta direcionada de ``u`` para ``v``, se existir.
@@ -110,13 +103,13 @@ class AdjacencyMatrixGraph(AbstractGraph):
             ValueError: Se ``u`` ou ``v`` forem índices inválidos.
 
         Note:
-            Complexidade: O(1).
+            Complexidade: O(1) amortizado.
         """
         self._validate_vertex(u, v)
-        if self._adj_matrix[u][v] is None:
+        if v not in self._adj_list[u]:
             self.logger.debug(f"Aresta ({u}, {v}) não existe. Nenhuma ação tomada.")
         else:
-            self._adj_matrix[u][v] = None
+            del self._adj_list[u][v]
 
     def is_successor(self, u: int, v: int) -> bool:
         """Verifica se ``v`` é sucessor de ``u``, ou seja, se existe aresta ``(u, v)``.
@@ -186,14 +179,10 @@ class AdjacencyMatrixGraph(AbstractGraph):
             ValueError: Se ``u`` for índice inválido.
 
         Note:
-            Complexidade: O(n).
+            Complexidade: O(n + m), onde *m* é o número total de arestas.
         """
         self._validate_vertex(u)
-        in_degree = 0
-        for v in range(self.num_vertices):
-            if self._adj_matrix[v][u] is not None:
-                in_degree += 1
-        return in_degree
+        return sum(1 for neighbors in self._adj_list if u in neighbors)
 
     def get_vertex_out_degree(self, u: int) -> int:
         """Retorna o grau de saída do vértice ``u``.
@@ -210,14 +199,10 @@ class AdjacencyMatrixGraph(AbstractGraph):
             ValueError: Se ``u`` for índice inválido.
 
         Note:
-            Complexidade: O(n).
+            Complexidade: O(1).
         """
         self._validate_vertex(u)
-        out_degree = 0
-        for v in range(self.num_vertices):
-            if self._adj_matrix[u][v] is not None:
-                out_degree += 1
-        return out_degree
+        return len(self._adj_list[u])
 
     def is_connected(self) -> bool:
         """Verifica se o grafo é fortemente conectado.
@@ -232,18 +217,18 @@ class AdjacencyMatrixGraph(AbstractGraph):
             para grafos com zero vértices (vácuamente verdadeiro).
 
         Note:
-            Complexidade: O(n²).
+            Complexidade: O(n + m).
         """
         if self.num_vertices == 0:
             return True
 
         visited = [False] * self.num_vertices
-        dfs_matrix(self._adj_matrix, 0, visited)
+        dfs_list(self._adj_list, 0, visited)
         if not all(visited):
             return False
 
         visited = [False] * self.num_vertices
-        dfs_matrix(self._adj_matrix, 0, visited, transpose=True)
+        dfs_list(self._adj_list, 0, visited, transpose=True)
         return all(visited)
 
     def is_empty_graph(self) -> bool:
@@ -253,14 +238,9 @@ class AdjacencyMatrixGraph(AbstractGraph):
             ``True`` se ``get_edge_count() == 0``.
 
         Note:
-            Complexidade: O(n²). Para verificações frequentes em grafos
-            grandes, considere manter um contador de arestas.
+            Complexidade: O(n).
         """
-        for i in range(self.num_vertices):
-            for j in range(self.num_vertices):
-                if self._adj_matrix[i][j] is not None:
-                    return False
-        return True
+        return all(len(neighbors) == 0 for neighbors in self._adj_list)
 
     def is_complete_graph(self) -> bool:
         """Verifica se o grafo possui todas as arestas possíveis.
@@ -272,7 +252,7 @@ class AdjacencyMatrixGraph(AbstractGraph):
             ``True`` se ``get_edge_count() == num_vertices * (num_vertices - 1)``.
 
         Note:
-            Complexidade: O(n²), dominada por :meth:`get_edge_count`.
+            Complexidade: O(n).
         """
         expected_edge_count = self.num_vertices * (self.num_vertices - 1)
         return self.get_edge_count() == expected_edge_count
@@ -290,12 +270,12 @@ class AdjacencyMatrixGraph(AbstractGraph):
                 (u, v) não existir.
 
         Note:
-            Complexidade: O(1).
+            Complexidade: O(1) amortizado.
         """
         self._validate_vertex(u, v)
-        if self._adj_matrix[u][v] is None:
+        if v not in self._adj_list[u]:
             raise ValueError(f"Aresta ({u}, {v}) não existe.")
-        self._adj_matrix[u][v] = w
+        self._adj_list[u][v] = w
 
     def get_edge_weight(self, u: int, v: int) -> float:
         """Retorna o peso da aresta (u, v).
@@ -312,9 +292,9 @@ class AdjacencyMatrixGraph(AbstractGraph):
                 (u, v) não existir.
 
         Note:
-            Complexidade: O(1).
+            Complexidade: O(1) amortizado.
         """
         self._validate_vertex(u, v)
-        if self._adj_matrix[u][v] is None:
+        if v not in self._adj_list[u]:
             raise ValueError(f"Aresta ({u}, {v}) não existe.")
-        return self._adj_matrix[u][v]
+        return self._adj_list[u][v]

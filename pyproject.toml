@@ -1,6 +1,6 @@
 [build-system]
 requires = ["setuptools>=61.0"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "pgraph"
@@ -13,4 +13,20 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["grafo*"]
+include = ["graph*"]
+
+[tool.ruff]
+line-length = 99
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "D", "G", "RUF"]
+ignore = [
+    "D107",  # __init__ é coberto pela docstring da classe
+    "G004",  # loguru suporta f-strings nativamente
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"graph/adjacency_list_graph.py" = ["D102"]  # métodos stub — implementação pendente
